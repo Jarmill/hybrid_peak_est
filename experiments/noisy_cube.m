@@ -10,15 +10,6 @@
 % auxiliary function v(t, x) decreases along noise-free trajectories
 
 
-%this performs a safety-margin analysis on the unsafe set:
-% Ru = 0.25;
-% Cu = [0.7; 0; 0.5];
-% Xu = [Ru^2 - (x-Cu).^2; x(3) - Cu(3)]>=0;
-
-
-%there is a bug in the CSP routine: the script 'get_representation' is
-%missing. I will need to find it
-
 
 SETUP = 1;
 SOLVE = 1;
@@ -32,9 +23,9 @@ if SETUP
     mset clear
     mpol('t');
     mpol('x', 3, 1);
-    mpol('y', 3, 1);
+%     mpol('w', 1, 1);
     w=0;
-    vars = struct('t', t, 'x', x, 'y', y);
+    vars = struct('t', t, 'x', x);
 
 %     Tmax = 5;
 %     Tmax = 10;
@@ -57,7 +48,7 @@ if SETUP
     
     L = R1*[1;1;1];
         
-    lsupp1 = unsafe_support(vars);
+    lsupp1 = loc_support(vars);
     lsupp1 = lsupp1.set_box(L);
     lsupp1.X = [lsupp1.X; critfw <= R1^2];
     lsupp1.X_init = X01;
@@ -65,37 +56,22 @@ if SETUP
 %     lsupp1.disturb = w^2<=1;
     
 %     p1 = x(1)^2;
-%     p1 = [];
-
-    Ru = 0.25;
-    Cu = [0.7; 0; 0.5];
-    Xu = [Ru^2 - (y-Cu).^2; y(3) - Cu(3)] >= 0;
-
-    lsupp1.X_unsafe = Xu;
-    lsupp1.dist = (x-y)'*(x-y);
-    lsupp1.CSP = 1;
-
-%     p1 = Ru^2 - (x-Cu).^2;
+    p1 = [];
 %     f1 = [x(2); -x(1) + x(3); x(1) + (2*x(2) + 3*x(3))*(1+x(3)^2) + w];
 f1 = [x(2); (-x(1) + x(3)); x(1) + (2*x(2) + 3*x(3))*(1+x(3)^2) + w];
 %     f1 = [x(2); -x(1) + x(3); x(1) + (2*x(2) + 3*x(3)) + w];
-    loc1 = location_distance(lsupp1, {f1}, 1);
+    loc1 = location(lsupp1, {f1 + [0;0;1], f1 + [0;0;-1]}, p1, 1);
 
     
         
     %box 2 (control)
     X02 = [];
     
-    lsupp2 = unsafe_support(vars);
+    lsupp2 = loc_support(vars);
     lsupp2 = lsupp2.set_box(L);
     lsupp2.X = [lsupp2.X; r2 >= R0^2];
     lsupp2.X_init = X02;
     lsupp2.Tmax = Tmax;
-
-    lsupp2.X_unsafe = Xu;
-    lsupp2.dist = (x-y)'*(x-y);
-    lsupp2.CSP = 1;
-
 %     lsupp2.disturb = w^2<=1;
     
     
@@ -104,10 +80,10 @@ f1 = [x(2); (-x(1) + x(3)); x(1) + (2*x(2) + 3*x(3))*(1+x(3)^2) + w];
 %     slow2 = 0.75;
     slow2 = 1;
     f2 = [x(2); (-x(1) + x(3)); -x(1) - (2*x(2) + 3*x(3)) + w];
-
+    p2 = x(1)^2;
 %     p2 = [x(1)^2; x(2)^2];
 
-    loc2 = location_distance(lsupp2, f2, 2);
+    loc2 = location(lsupp2, {f2+[0;0;1], f2+[0;0;-1]}, p2, 2);
     
     %guards
     R  = x; %reset map
@@ -130,17 +106,32 @@ end
 %% solve the system and get peak estimates
 if SOLVE
     
-    PM =  distance_manager_hy({loc1, loc2}, {gfw, gbk});
+    PM =  peak_manager_hy({loc1, loc2}, {gfw, gbk});
 
 %BAD BOUNDS
-% order = 2; %[dual: 1.0051]
-order = 3;
+order = 2; %[dual: 1.0051]
 
-%     [objective, mom_con, supp_con, len_dual] =  PM.cons(order);
-    [sol, PM] = PM.run(order);    
-%     [sol, = PM.run(order) ;
+%with p1 = -inf
+% order = 1%p* = 2.2500000
+%     order = 2;  %p* = [0.701374603992632]
+%     order = 3;  %p* = [0.473082683617790]
+%     order = 4;  %p* = [0.408560944887520]
+%     order = 5;  %p* = [0.399423438946940]
+%     order = 6;  %p* =[0.389332085206230]
+
+
+%with p1 = x(1)^2
+% order = 1%p* = 2.2500000
+%     order = 2;  %p* = 0.701374304679882
+%     order = 3;  %p* = 0.472997196248704
+%     order = 4;  %p* = 0.408440882926320
+%     order = 5;  %p* = 0.400866754178386
+%     order = 6;  %p* = 0.390606394334153
+    [objective, mom_con, supp_con] =  PM.cons(order);
+%     [sol, PM] = PM.run(order, Tmax);    
+    sol = PM.run(order) ;
 %     fprintf('abs(x1) bound: %0.4f \n', sqrt(sol.obj_rec))
-fprintf('bound: %0.4f \n', (sol.obj_rec))
+fprintf('x1^2 bound: %0.4f \n', (sol.obj_rec))
     p_est = sqrt(sol.obj_rec);
     [rr, mm, cc] = PM.recover();
 end

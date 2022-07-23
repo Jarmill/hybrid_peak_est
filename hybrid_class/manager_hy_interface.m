@@ -190,18 +190,11 @@ classdef manager_hy_interface < manager_interface
   
             gamma = rec_eq(1);
 
-%             if nargin < 3
-%                 gamma = rec_eq(end);
-%             end
-                        
-            
             liou_offset = 1;
             cost_con_offset = 0;
 
             %locations
-            for i = 1:length(obj.loc)
-                
-                
+            for i = 1:length(obj.loc)                               
                 
                 %liouville                
                 liou_len_curr = len_dual.v(i);
