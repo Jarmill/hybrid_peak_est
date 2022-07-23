@@ -11,9 +11,9 @@
 
 
 
-SETUP = 0;
-SOLVE = 0;
-SAMPLE = 1;
+SETUP = 1;
+SOLVE = 1;
+SAMPLE = 0;
 PLOT = 0;
 
 
@@ -109,7 +109,7 @@ if SOLVE
     PM =  peak_manager_hy({loc1, loc2}, {gfw, gbk});
 
 %BAD BOUNDS
-order = 2; %[dual: 1.0051]
+order = 4;
 
     [objective, mom_con, supp_con] =  PM.cons(order);
 %     [sol, PM] = PM.run(order, Tmax);    
@@ -134,15 +134,18 @@ if SAMPLE
     LS2 = sampler_uncertain(loc2, smp2);
     
     
-    LS1.mu = 0.03;
-    LS2.mu = 0.03;
+    LS1.mu = 0.01;
+    LS2.mu = 0.01;
+
+%     LS1.mu = 0.03;
+%     LS2.mu = 0.03;
     
     HS = sampler_hy({LS1, LS2}, {gfw, gbk});
     
     %     osh = HS.sample_traj(0, [0;0;0.03], 1, 5);
-    Nsample = 1;
+%     Nsample = 1;
 %     Nsample = 20;
-%     Nsample = 50;
+    Nsample = 50;
 %     Nsample = 5;
 
 
@@ -155,10 +158,11 @@ end
 %% plot trajectories
 if PLOT
     CPlot = cube_plotter(osm, osd, R0, R1);
+%     CPlot.cube_plot();
     CPlot.cube_plot(sqrt(sol.obj_rec));
-    CPlot.nonneg_loc();
-    CPlot.aux_plot();
-    CPlot.nonneg_jump();
+%     CPlot.nonneg_loc();
+%     CPlot.aux_plot();
+%     CPlot.nonneg_jump();
 
 %     CPlot.nonneg_jump();
 %     CPlot.objective_plot();

@@ -21,7 +21,7 @@ classdef cube_plotter < plotter_hy_interface
             end
         end
         
-        function F = cube_plot(obj,p_est)
+        function [F, ax1, ax2] = cube_plot(obj,p_est)
             %plot trajectories of the system in the unit cube [-1,1]^3
             
             F = figure(800);
@@ -70,6 +70,8 @@ classdef cube_plotter < plotter_hy_interface
                 hlink = linkprop([ax1,ax2],{'CameraPosition','CameraUpVector', 'CameraTarget'});
                 setappdata(gcf, 'theLink', hlink)
                 view(3)
+
+%                 xlim(1.1*p_est*[-1;1])
 
             end    
             

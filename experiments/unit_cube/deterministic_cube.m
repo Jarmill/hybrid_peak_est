@@ -11,9 +11,9 @@
 
 
 
-SETUP = 0;
-SOLVE = 0;
-SAMPLE = 1;
+SETUP = 1;
+SOLVE = 1;
+SAMPLE = 0;
 PLOT = 0;
 
 

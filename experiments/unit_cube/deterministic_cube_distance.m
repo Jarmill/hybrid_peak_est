@@ -140,8 +140,13 @@ if SOLVE
     PM =  distance_manager_hy({loc1, loc2}, {gfw, gbk});
 
 %BAD BOUNDS
-% order = 2; %[dual: 1.0051]
-order = 3;
+
+%CSP
+order = 1; %0
+order = 2; %0
+order = 3; %0.00433619413496378 [4.336 e-3
+order = 4; %0.016169190158587
+order = 5;
 
 %     [objective, mom_con, supp_con, len_dual] =  PM.cons(order);
     [sol, PM] = PM.run(order);    
