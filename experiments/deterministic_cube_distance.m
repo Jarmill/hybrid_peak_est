@@ -24,7 +24,7 @@ SETUP = 1;
 SOLVE = 1;
 SAMPLE = 0;
 PLOT = 0;
-
+CSP = 1; %correlatively sparse decomposition in the distance objective
 
 %% setup the locations and guards
 if SETUP
@@ -73,13 +73,17 @@ if SETUP
 
     lsupp1.X_unsafe = Xu;
     lsupp1.dist = (x-y)'*(x-y);
-    lsupp1.CSP = 1;
+    
 
 %     p1 = Ru^2 - (x-Cu).^2;
 %     f1 = [x(2); -x(1) + x(3); x(1) + (2*x(2) + 3*x(3))*(1+x(3)^2) + w];
 f1 = [x(2); (-x(1) + x(3)); x(1) + (2*x(2) + 3*x(3))*(1+x(3)^2) + w];
 %     f1 = [x(2); -x(1) + x(3); x(1) + (2*x(2) + 3*x(3)) + w];
-    loc1 = location_distance(lsupp1, {f1}, 1);
+    if CSP
+        loc1 = location_distance_csp(lsupp1, {f1}, 1);
+    else
+        loc1 = location_distance(lsupp1, {f1}, 1);
+    end
 
     
         
@@ -94,7 +98,7 @@ f1 = [x(2); (-x(1) + x(3)); x(1) + (2*x(2) + 3*x(3))*(1+x(3)^2) + w];
 
     lsupp2.X_unsafe = Xu;
     lsupp2.dist = (x-y)'*(x-y);
-    lsupp2.CSP = 1;
+    
 
 %     lsupp2.disturb = w^2<=1;
     
@@ -106,8 +110,11 @@ f1 = [x(2); (-x(1) + x(3)); x(1) + (2*x(2) + 3*x(3))*(1+x(3)^2) + w];
     f2 = [x(2); (-x(1) + x(3)); -x(1) - (2*x(2) + 3*x(3)) + w];
 
 %     p2 = [x(1)^2; x(2)^2];
-
-    loc2 = location_distance(lsupp2, f2, 2);
+    if CSP
+        loc2 = location_distance_csp(lsupp2, f2, 2);
+    else
+        loc2 = location_distance(lsupp2, f2, 2);
+    end
     
     %guards
     R  = x; %reset map
