@@ -70,10 +70,10 @@ classdef sampler_hy
                     jump_curr = struct('t', t_curr, 'x', x_curr, 'x_jump', ...
                         Rx, 'guard', g_id_new);
                     
-                    if g_new.dual.solved
-                        %TODO
-                        jump_curr.nonneg = g_new.nonneg(t_curr/Tmax, x_curr);
-                    end
+%                     if g_new.dual.solved
+%                         %TODO
+%                         jump_curr.nonneg = g_new.nonneg(t_curr/Tmax, x_curr);
+%                     end
                     out_sim.jump{end+1} = jump_curr;
                     
                     
@@ -119,7 +119,7 @@ classdef sampler_hy
             possible_g = [];
             supp_loc(1) = obj.loc_smp{id}.loc.supp_eval(t, x);
             for j = 1:N_guards
-                supp_g(j) = obj.guards{g_mask(j)}.supp_eval(t, x);
+                supp_g(j) = obj.guards{g_mask(j)}.supp_eval(t, x, 1.5e-6);
                 if supp_g(j)
                     possible_g = [possible_g; obj.guards{g_mask(j)}.id];
                 end

@@ -11,9 +11,9 @@
 
 
 
-SETUP = 1;
-SOLVE = 1;
-SAMPLE = 0;
+SETUP = 0;
+SOLVE = 0;
+SAMPLE = 1;
 PLOT = 0;
 
 
@@ -111,22 +111,6 @@ if SOLVE
 %BAD BOUNDS
 order = 2; %[dual: 1.0051]
 
-%with p1 = -inf
-% order = 1%p* = 2.2500000
-%     order = 2;  %p* = [0.701374603992632]
-%     order = 3;  %p* = [0.473082683617790]
-%     order = 4;  %p* = [0.408560944887520]
-%     order = 5;  %p* = [0.399423438946940]
-%     order = 6;  %p* =[0.389332085206230]
-
-
-%with p1 = x(1)^2
-% order = 1%p* = 2.2500000
-%     order = 2;  %p* = 0.701374304679882
-%     order = 3;  %p* = 0.472997196248704
-%     order = 4;  %p* = 0.408440882926320
-%     order = 5;  %p* = 0.400866754178386
-%     order = 6;  %p* = 0.390606394334153
     [objective, mom_con, supp_con] =  PM.cons(order);
 %     [sol, PM] = PM.run(order, Tmax);    
     sol = PM.run(order) ;
@@ -156,9 +140,9 @@ if SAMPLE
     HS = sampler_hy({LS1, LS2}, {gfw, gbk});
     
     %     osh = HS.sample_traj(0, [0;0;0.03], 1, 5);
-%     Nsample = 1;
+    Nsample = 1;
 %     Nsample = 20;
-    Nsample = 50;
+%     Nsample = 50;
 %     Nsample = 5;
 
 

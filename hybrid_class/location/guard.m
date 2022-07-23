@@ -104,12 +104,15 @@ classdef guard < meas_base
             reset_out =  (eval(obj.reset, obj.vars.x, x));
         end
         
-        function supp_out = supp_eval(obj, t, x)
+        function supp_out = supp_eval(obj, t, x, tol)
             %is (t, x) in the support of the guard?
+            if nargin < 4
+                tol = 1e-6;
+            end
             if obj.TIME_INDEP
-                supp_out =  all(eval(obj.supp, obj.get_vars(), x));            
+                supp_out =  all(eval(obj.supp, obj.get_vars(), x, tol));            
             else
-                supp_out =  all(eval(obj.supp, obj.get_vars(), [t; x]));            
+                supp_out =  all(eval(obj.supp, obj.get_vars(), [t; x], tol));            
             end
         end
         

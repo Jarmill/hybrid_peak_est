@@ -11,8 +11,8 @@
 
 
 
-SETUP = 1;
-SOLVE = 1;
+SETUP = 0;
+SOLVE = 0;
 SAMPLE = 1;
 PLOT = 0;
 
@@ -108,8 +108,10 @@ if SOLVE
     
     PM =  peak_manager_hy({loc1, loc2}, {gfw, gbk});
 
-%BAD BOUNDS
-order = 2; %[dual: 1.0051]
+
+% order = 2; %[dual: 1.0051]
+
+order = 4;
 
     [objective, mom_con, supp_con] =  PM.cons(order);
 %     [sol, PM] = PM.run(order, Tmax);    
@@ -141,6 +143,7 @@ if SAMPLE
     
     %     osh = HS.sample_traj(0, [0;0;0.03], 1, 5);
 %     Nsample = 1;
+% Nsample = 10;
 %     Nsample = 20;
     Nsample = 50;
 %     Nsample = 5;
