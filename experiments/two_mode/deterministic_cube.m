@@ -108,15 +108,15 @@ if SOLVE
     
     PM =  peak_manager_hy({loc1, loc2}, {gfw, gbk});
 
-    order = 1; %2.250
-    order = 2; %0.651423828753876
-    order = 3; % 0.464284255422197
+%     order = 1; %2.250 
+%     order = 2; %0.651423828753876
+%     order = 3; % 0.464284255422197
     order = 4; %0.407625094582554
-    order=5;
+%     order=5; %0.3958
 
 %     [objective, mom_con, supp_con] =  PM.cons(order);
-%     [sol, PM] = PM.run(order, Tmax);    
-    sol = PM.run(order) ;
+    [sol, PM] = PM.run(order, Tmax);    
+%     sol = PM.run(order) ;
     obj_rec = sol.obj_rec;
 %     fprintf('abs(x1) bound: %0.4f \n', sqrt(sol.obj_rec))
 fprintf('x1^2 bound: %0.4f \n', (sol.obj_rec))

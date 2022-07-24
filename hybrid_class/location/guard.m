@@ -128,8 +128,8 @@ classdef guard < meas_base
                 Rx = eval(obj.reset, obj.vars.x, x);
             end
             
-            vsrc = obj.src.v_eval(t, x);
-            vdest = obj.dest.v_eval(t, Rx);
+            vsrc = obj.src.v_eval(t, x');
+            vdest = obj.dest.v_eval(t, Rx');
             
             nn_out = vsrc - vdest - obj.dual.zeno;
             
