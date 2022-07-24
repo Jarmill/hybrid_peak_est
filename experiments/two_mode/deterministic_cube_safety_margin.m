@@ -65,11 +65,15 @@ if SETUP
 %     p1 = [];
 
 %     Ru = 0.25;
-Ru = 0.4;
+% Ru = 0.4;
+% Ru = 0.3;
+Ru = 0.25;
 %     Cu = [0.7; 0; 0.5];
 %     Cu = [0.55; 0; 0.5];
 %     Cu = [-0.5; -0.3; 0.5];
-Cu = [-0.5; -0.5; 0.5];
+% Cu = [-0.5; -0.5; 0.5];
+% Cu = [-0.6; -0.6; 0.5]; %is safe at order 4
+Cu = [-0.6; -0.5; 0.5]; %
 p1 = [Ru^2 - sum((x-Cu).^2); x(3) - Cu(3)];
 
 %     p1 = Ru^2 - (x-Cu).^2;
@@ -126,10 +130,10 @@ if SOLVE
     PM =  peak_manager_hy({loc1, loc2}, {gfw, gbk});
 
 %BAD BOUNDS
-% order = 1; %0.0590
-% order = 2; %0.0590
-% order = 3; %0.0581
-order = 4; %0.0142
+% order = 1; %
+% order = 2; %
+% order = 3; %
+order = 4; %
 % order = 5;
 %with p1 = -inf
 % order = 1%p* = 2.2500000

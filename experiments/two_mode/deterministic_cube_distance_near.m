@@ -71,7 +71,8 @@ if SETUP
 
     Ru = 0.25;
 %     Cu = [0.7; 0; 0.5];
-    Cu = [0.5; 0; 0.5];
+%     Cu = [0.5; 0; 0.5];
+    Cu = [-0.6; -0.5; 0.5]; %safe, verified by safety margin
     Xu = [Ru^2 - sum((y-Cu).^2); y(3) - Cu(3)] >= 0;
 
     lsupp1.X_unsafe = Xu;
@@ -142,13 +143,24 @@ if SOLVE
     
     PM =  distance_manager_hy({loc1, loc2}, {gfw, gbk});
 
-%Cu = [0.5; 0; 0.5];
-%CSP with L = [1.5; 1.5; 1.5]
-% order = 1; %0
-% order = 2; %0
-% order = 3; % 0
-% order = 4; % 5.446467612129080e-04
-order = 5; %0.001040262107855
+Cu = [-0.6; -0.5; 0.5];
+order = 1; %0
+order = 2; %0
+order = 3; %0
+order = 4; %0.002799054195342
+order = 5; %0.007941915368103
+
+
+
+% %Cu = [0.5; 0; 0.5];, but closest point is in location 1
+% %CSP with L = [1.5; 1.5; 1.5]
+% % order = 1; %0
+% % order = 2; %0
+% % order = 3; % 0
+% % order = 4; % 5.446467612129080e-04
+% order = 5; %0.001040262107855
+
+
 
 %     [objective, mom_con, supp_con, len_dual] =  PM.cons(order);
     [sol, PM] = PM.run(order);    

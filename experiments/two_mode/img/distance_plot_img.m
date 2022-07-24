@@ -9,10 +9,17 @@ load('traj_deterministic_cube.mat')
 %near parameters
 % dist = sqrt(0.001040262107855);
 % dist = 0.05;
+
+%close but possibly numerically unstable
 dist = sqrt(0.005118592284530);
 % Cu = [-0.5; -0.3; 0.5];
 Cu = [-0.5; -0.5; 0.5];
 Ru = 0.4;
+
+%further away, but with a safety-margin certificate of safety
+dist = sqrt(0.007941915368103);
+Ru = 0.25;
+Cu =  [-0.6; -0.5; 0.5];
 
 %quarter-torus
 R = Ru;  %radius of half-sphere
