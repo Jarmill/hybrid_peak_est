@@ -1,8 +1,15 @@
-load('distance_cube_param.mat')
+% load('distance_cube_param.mat')
+load('distance_cube_small_L_param.mat')
 load('traj_deterministic_cube.mat')
 
 %% compute the unsafe set
-dist = obj_rec;
+% dist = obj_rec;
+% dist = sqrt(0.051026222539867);
+
+%near parameters
+dist = sqrt(0.001040262107855);
+Cu = [0.5; 0; 0.5];
+
 %quarter-torus
 R = Ru;  %radius of half-sphere
 r = dist; %inner radius of torus
@@ -57,6 +64,14 @@ surf(axl(i), X_torus+ Cu(1), Y_torus+ Cu(2), Z_torus+ Cu(3), 'FaceColor', 'r', '
 surf(axl(i), X_sphere+ Cu(1), Y_sphere+ Cu(2), Z_sphere+ Cu(3), 'FaceColor', 'r', 'FaceAlpha', falpha, 'edgecolor', 'none');
 
 patch(axl(i), 'XData', circ(1,:)+ Cu(1), 'YData', circ(2, :)+ Cu(2), 'ZData', z_circ+ Cu(3), 'FaceColor', 'r', 'FaceAlpha', falpha, 'edgecolor', 'none');
-axl(i).XLim = [-0.6, 1];
+axl(i).XLim = [-0.6, 0.8];
+
+
+
 end
-% view(3)
+
+% %optimal point
+% scatter3(ax1, mm{1}.x0(1), mm{1}.x0(2),mm{1}.x0(3), 300, 'blue', 'o', 'LineWidth', 2);
+% scatter3(ax1, mm{1}.xp(1), mm{1}.xp(2),mm{1}.xp(3), 300, 'blue', '*', 'LineWidth', 2);
+% scatter3(ax1, mm{1}.y(1), mm{1}.y(2),mm{1}.y(3), 300, 'blue', 's', 'LineWidth', 2);
+% % view(3)
