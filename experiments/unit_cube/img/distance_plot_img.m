@@ -7,8 +7,12 @@ load('traj_deterministic_cube.mat')
 % dist = sqrt(0.051026222539867);
 
 %near parameters
-dist = sqrt(0.001040262107855);
-Cu = [0.5; 0; 0.5];
+% dist = sqrt(0.001040262107855);
+% dist = 0.05;
+dist = sqrt(0.005118592284530);
+% Cu = [-0.5; -0.3; 0.5];
+Cu = [-0.5; -0.5; 0.5];
+Ru = 0.4;
 
 %quarter-torus
 R = Ru;  %radius of half-sphere
@@ -64,7 +68,8 @@ surf(axl(i), X_torus+ Cu(1), Y_torus+ Cu(2), Z_torus+ Cu(3), 'FaceColor', 'r', '
 surf(axl(i), X_sphere+ Cu(1), Y_sphere+ Cu(2), Z_sphere+ Cu(3), 'FaceColor', 'r', 'FaceAlpha', falpha, 'edgecolor', 'none');
 
 patch(axl(i), 'XData', circ(1,:)+ Cu(1), 'YData', circ(2, :)+ Cu(2), 'ZData', z_circ+ Cu(3), 'FaceColor', 'r', 'FaceAlpha', falpha, 'edgecolor', 'none');
-axl(i).XLim = [-0.6, 0.8];
+axl(i).XLim = [-1, 0.6];
+axl(i).YLim = [-1, 0.6];
 
 
 

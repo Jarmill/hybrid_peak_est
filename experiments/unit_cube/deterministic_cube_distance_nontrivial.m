@@ -16,12 +16,15 @@
 % Xu = [Ru^2 - (x-Cu).^2; x(3) - Cu(3)]>=0;
 
 
+%there is a bug in the CSP routine: the script 'get_representation' is
+%missing. I will need to find it
+
 
 SETUP = 1;
 SOLVE = 1;
 SAMPLE = 0;
 PLOT = 0;
-
+CSP = 1; %correlatively sparse decomposition in the distance objective
 
 %% setup the locations and guards
 if SETUP
@@ -29,9 +32,9 @@ if SETUP
     mset clear
     mpol('t');
     mpol('x', 3, 1);
-%     mpol('w', 1, 1);
+    mpol('y', 3, 1);
     w=0;
-    vars = struct('t', t, 'x', x);
+    vars = struct('t', t, 'x', x, 'y', y);
 
 %     Tmax = 5;
 %     Tmax = 10;
@@ -52,9 +55,11 @@ if SETUP
     X01 = [r2 == R0^2];
 %     X01 = [R0;0;0];
     
+
     L = R1*[1;1;1];
+%     L = [1; 1; R1];
         
-    lsupp1 = loc_support(vars);
+    lsupp1 = unsafe_support(vars);
     lsupp1 = lsupp1.set_box(L);
     lsupp1.X = [lsupp1.X; critfw <= R1^2];
     lsupp1.X_init = X01;
@@ -64,30 +69,43 @@ if SETUP
 %     p1 = x(1)^2;
 %     p1 = [];
 
+    %unsafe set
 %     Ru = 0.25;
-Ru = 0.4;
+    Ru = 0.4;
+    Cu = [-0.5; -0.5; 0.5];
 %     Cu = [0.7; 0; 0.5];
-%     Cu = [0.55; 0; 0.5];
-%     Cu = [-0.5; -0.3; 0.5];
-Cu = [-0.5; -0.5; 0.5];
-p1 = [Ru^2 - sum((x-Cu).^2); x(3) - Cu(3)];
+%     Cu = [0.5; 0; 0.5];
+    Xu = [Ru^2 - sum((y-Cu).^2); y(3) - Cu(3)] >= 0;
+
+    lsupp1.X_unsafe = Xu;
+    lsupp1.dist = (x-y)'*(x-y);
+    
 
 %     p1 = Ru^2 - (x-Cu).^2;
 %     f1 = [x(2); -x(1) + x(3); x(1) + (2*x(2) + 3*x(3))*(1+x(3)^2) + w];
 f1 = [x(2); (-x(1) + x(3)); x(1) + (2*x(2) + 3*x(3))*(1+x(3)^2) + w];
 %     f1 = [x(2); -x(1) + x(3); x(1) + (2*x(2) + 3*x(3)) + w];
-    loc1 = location(lsupp1, {f1}, p1, 1);
+    if CSP
+        loc1 = location_distance_csp(lsupp1, {f1}, 1);
+    else
+        loc1 = location_distance(lsupp1, {f1}, 1);
+    end
 
     
         
     %box 2 (control)
     X02 = [];
     
-    lsupp2 = loc_support(vars);
+    lsupp2 = unsafe_support(vars);
     lsupp2 = lsupp2.set_box(L);
     lsupp2.X = [lsupp2.X; r2 >= R0^2];
     lsupp2.X_init = X02;
     lsupp2.Tmax = Tmax;
+
+    lsupp2.X_unsafe = Xu;
+    lsupp2.dist = (x-y)'*(x-y);
+    
+
 %     lsupp2.disturb = w^2<=1;
     
     
@@ -96,11 +114,13 @@ f1 = [x(2); (-x(1) + x(3)); x(1) + (2*x(2) + 3*x(3))*(1+x(3)^2) + w];
 %     slow2 = 0.75;
     slow2 = 1;
     f2 = [x(2); (-x(1) + x(3)); -x(1) - (2*x(2) + 3*x(3)) + w];
-    
-    p2 = p1;
-%     p2 = [x(1)^2; x(2)^2];
 
-    loc2 = location(lsupp2, f2, p2, 2);
+%     p2 = [x(1)^2; x(2)^2];
+    if CSP
+        loc2 = location_distance_csp(lsupp2, f2, 2);
+    else
+        loc2 = location_distance(lsupp2, f2, 2);
+    end
     
     %guards
     R  = x; %reset map
@@ -123,44 +143,33 @@ end
 %% solve the system and get peak estimates
 if SOLVE
     
-    PM =  peak_manager_hy({loc1, loc2}, {gfw, gbk});
+    PM =  distance_manager_hy({loc1, loc2}, {gfw, gbk});
 
-%BAD BOUNDS
-% order = 1; %0.0590
-% order = 2; %0.0590
-% order = 3; %0.0581
-order = 4; %0.0142
-% order = 5;
-%with p1 = -inf
-% order = 1%p* = 2.2500000
-%     order = 2;  %p* = [0.701374603992632]
-%     order = 3;  %p* = [0.473082683617790]
-%     order = 4;  %p* = [0.408560944887520]
-%     order = 5;  %p* = [0.399423438946940]
-%     order = 6;  %p* =[0.389332085206230]
+%Cu = [0.5; 0; 0.5];
+%CSP with L = [1.5; 1.5; 1.5]
+% order = 1; %0
+% order = 2; %0
+% order = 3; % 0
+% order = 4; % 0
+order = 5; % 0.005118592284530
 
-
-%with p1 = x(1)^2
-% order = 1%p* = 2.2500000
-%     order = 2;  %p* = 0.701374304679882
-%     order = 3;  %p* = 0.472997196248704
-%     order = 4;  %p* = 0.408440882926320
-%     order = 5;  %p* = 0.400866754178386
-%     order = 6;  %p* = 0.390606394334153
-    [objective, mom_con, supp_con] =  PM.cons(order);
-%     [sol, PM] = PM.run(order, Tmax);    
-    sol = PM.run(order) ;
+%     [objective, mom_con, supp_con, len_dual] =  PM.cons(order);
+    [sol, PM] = PM.run(order);    
+%     [sol, = PM.run(order) ;
 %     fprintf('abs(x1) bound: %0.4f \n', sqrt(sol.obj_rec))
 fprintf('bound: %0.4f \n', (sol.obj_rec))
     p_est = sqrt(sol.obj_rec);
     [rr, mm, cc] = PM.recover();
+
+    obj_rec = sol.obj_rec;
 end
 
 %% sample trajectories
 if SAMPLE
     rng(25, 'twister')
-    smp1 = struct('x', @() sphere_sample(1, 3)'*R0);
+%     smp1 = struct('x', @() sphere_sample(1, 3)'*R0);
 %     smp1 = struct('x', @() [R0; 0; 0]);
+smp1 = struct('x', @() mm{1}.x0);
 
     smp2 = struct('x', []);
     
@@ -176,13 +185,14 @@ if SAMPLE
     HS = sampler_hy({LS1, LS2}, {gfw, gbk});
     
     %     osh = HS.sample_traj(0, [0;0;0.03], 1, 5);
-%     Nsample = 1;
+    Nsample = 1;
 %     Nsample = 20;
-    Nsample = 50;
+%     Nsample = 50;
 %     Nsample = 5;
 
 
-    [osm, osd] = HS.sample_traj_multi(Nsample, Tmax);
+%     [osm, osd] = HS.sample_traj_multi(Nsample, Tmax);
+    [osm_opt, osd_opt] = HS.sample_traj_multi(Nsample, Tmax);
     
     t_end = cellfun(@(o) o.t_end, osm);
     

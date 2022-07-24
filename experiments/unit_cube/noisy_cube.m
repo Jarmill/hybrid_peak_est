@@ -108,8 +108,13 @@ if SOLVE
     
     PM =  peak_manager_hy({loc1, loc2}, {gfw, gbk});
 
-%BAD BOUNDS
-order = 4;
+
+order = 1; %2.250
+order = 2; %1.4039
+order = 3; %1.0350
+order = 4; %0.9790
+order = 5; %0.9660
+% order = 4;
 
     [objective, mom_con, supp_con] =  PM.cons(order);
 %     [sol, PM] = PM.run(order, Tmax);    
