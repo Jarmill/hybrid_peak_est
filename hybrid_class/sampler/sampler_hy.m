@@ -80,6 +80,9 @@ classdef sampler_hy
                     %complete the jump
                     id_curr = g_new.dest.id;
                     x_curr = Rx;
+
+                    %project onto feasible set, due to numerical issues.
+                    x_curr = obj.loc_smp{id_curr}.loc.supp_proj(x_curr);
                     
                     if zeno_count(g_id_new) > g_new.zeno_cap
                         %maximum number of jumps is exceeded
