@@ -3,11 +3,12 @@ N = 31;
 [x, y] = meshgrid(linspace(-R, R, N));
 
 %original
-% dx = (-y + x.*y);
-% dy = (-y  - x + x.^3);
-
-dx = (-y + x.*y+0.5);
+% k = 0.5;
+k = 0.6;
+dx = (-y + x.*y+k);
 dy = (-y  - x + x.^3);
+
+
 
 
 figure(444)

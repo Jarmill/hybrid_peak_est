@@ -6,10 +6,11 @@ classdef rl_plotter < plotter_hy_interface
         R0 = 0.2;
         C0 = [-0.75; 0.75];
         R1 = 1;
+        Cu = [0;0];
     end
     
     methods
-        function obj = rl_plotter(osm, osd, R0, C0)
+        function obj = rl_plotter(osm, osd, R0, C0, Cu)
             %CUBE_PLOTTER Construct an instance of this class
             %   Detailed explanation goes here
 %             obj.Property1 = inputArg1 + inputArg2;
@@ -20,6 +21,10 @@ classdef rl_plotter < plotter_hy_interface
                 obj.R0 = R0;
                 obj.C0 = C0;
                 
+            end
+
+            if nargin > 4
+                obj.Cu = Cu;
             end
         end
         
@@ -74,7 +79,7 @@ classdef rl_plotter < plotter_hy_interface
             
             if nargin == 2
                 Rp = sqrt(-p_est);
-                Xp = Rp * circ;
+                Xp = Rp * circ + obj.Cu;
                 plot(Xp(1, :), Xp(2, :), ':r', 'linewidth', 3)
             end
 %             linkprop([ax2; ax1], {'XLim', 'YLim', 'ZLim', 'CameraPosition', 'CameraUpVector', 'CameraViewAngle', 'CameraTarget'});
