@@ -24,15 +24,21 @@ classdef cube_plotter < plotter_hy_interface
         function [F, ax1, ax2] = cube_plot(obj,p_est)
             %plot trajectories of the system in the unit cube [-1,1]^3
             
-            F = figure(800);
+            F = figure(1);
             clf
 
-            loc_names = {'No Control', 'Control'};
-            ax1 = subplot(1,2,1);
+            loc_names = {'No Control', 'Controlled'};
+%             ax1 = subplot(1,2,1);
+            ax1 = subplot(2,1,1);
             hold on
-            ax2 = subplot(1,2,2);
+            axis off
+pbaspect([1,1,1])
+%             ax2 = subplot(1,2,2);
+            ax2 = subplot(2,1,2);
             hold on
             axlist = [ax1, ax2];
+            axis off
+pbaspect([1,1,1])
 
             for i = 1:length(obj.osd.locations) %i=1:2
         %         subplot(1, 2, i)
@@ -40,7 +46,9 @@ classdef cube_plotter < plotter_hy_interface
                 xlabel(axlist(i), 'x_1')
                 ylabel(axlist(i), 'x_2')
                 zlabel(axlist(i), 'x_3')
-                title(axlist(i), loc_names{i}, 'FontSize', 14)
+                
+
+%                 title(axlist(i), loc_names{i}, 'FontSize', 16)
                 [X, Y, Z] = sphere(30);
                 surf(axlist(i), obj.R0*X, obj.R0*Y, obj.R0*Z, 'FaceColor', 0.5*[1,1,1], 'FaceAlpha', obj.falpha, 'edgecolor', 'none');
 
@@ -53,6 +61,8 @@ classdef cube_plotter < plotter_hy_interface
                     traj_curr = obj.osd.locations{i}{j};
                     plot3(axlist(i), traj_curr.x(:, 1), traj_curr.x(:, 2), traj_curr.x(:, 3), 'c')
                     plot3(axlist(i),-traj_curr.x(:, 1),-traj_curr.x(:, 2),-traj_curr.x(:, 3), 'c')
+                    
+                    
 %                     if j < length(obj.osd.locations{i})
 %                         scatter3(axlist(i), traj_curr.x(end, 1), traj_curr.x(end, 2), traj_curr.x(end, 3), 100, 'ok')
 %                         scatter3(axlist(i),-traj_curr.x(end, 1),-traj_curr.x(end, 2),-traj_curr.x(end, 3), 100, 'ok')
@@ -65,6 +75,8 @@ classdef cube_plotter < plotter_hy_interface
 %                         scatter3(axlist(i),-traj_curr.x(1, 1),-traj_curr.x(1, 2),-traj_curr.x(1, 3), 100, 'ok')
 %                     end
 
+
+
                 end 
         %         axis square
                 hlink = linkprop([ax1,ax2],{'CameraPosition','CameraUpVector', 'CameraTarget'});
@@ -72,6 +84,7 @@ classdef cube_plotter < plotter_hy_interface
                 view(3)
 
 %                 xlim(1.1*p_est*[-1;1])
+
 
             end    
             
@@ -90,6 +103,8 @@ classdef cube_plotter < plotter_hy_interface
                     patch(axlist(i),p_est*xp, yp, zp, 'r','FaceAlpha', obj.falpha, 'edgecolor', 'none')
                     patch(axlist(i),-p_est*xp, yp, zp, 'r','FaceAlpha', obj.falpha, 'edgecolor', 'none')
                     end
+                    
+                    
                 end
             end
             linkprop([ax2; ax1], {'XLim', 'YLim', 'ZLim', 'CameraPosition', 'CameraUpVector', 'CameraViewAngle', 'CameraTarget'});
