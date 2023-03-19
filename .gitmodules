@@ -1,0 +1,3 @@
+[submodule "meas_class"]
+	path = meas_class
+	url = https://github.com/Jarmill/meas_class.git
