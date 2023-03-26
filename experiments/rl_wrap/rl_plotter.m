@@ -36,12 +36,12 @@ classdef rl_plotter < plotter_hy_interface
             hold on
             
 
-            loc_names = {''};
+            loc_names = {'Right-Left Jump'};
             for i = 1:length(obj.osd.locations) %i=1:2
         %         subplot(1, 2, i)
         %         hold on
-                xlabel('x_1')
-                ylabel('x_2')
+                xlabel('$x_1$', 'interpreter', 'latex')
+                ylabel('$x_2$', 'interpreter', 'latex')
                 
                 title( loc_names, 'FontSize', 14)
 

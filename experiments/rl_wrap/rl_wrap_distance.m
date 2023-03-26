@@ -10,7 +10,7 @@
 SETUP = 1;
 SOLVE = 1;
 SAMPLE = 0;
-PLOT = ;
+PLOT = 1;
 % rl_analyze_traj;
 
 
@@ -20,9 +20,10 @@ if SETUP
     mset clear
     mpol('t');
     mpol('x', 2, 1);
+    mpol('y', 2, 1);
 %     mpol('w', 1, 1);
     w=0;
-    vars = struct('t', t, 'x', x);
+    vars = struct('t', t, 'x', x, 'y', y);
 
 %     Tmax = 4;
     Tmax = 5;
@@ -47,7 +48,7 @@ if SETUP
     
     L = R1*[1;1];
         
-    lsupp1 = loc_support(vars);
+    lsupp1 = unsafe_support(vars);
     lsupp1 = lsupp1.set_box(L);
 %     lsupp1.X = [lsupp1.X];
     lsupp1.X_init = X01;
@@ -56,8 +57,20 @@ if SETUP
     
 %     p1 = -x'*x;
 
-    Cu = [-0.5; -0.5];
-    p1 = -sum((x-Cu).^2);
+%     Cu = [-0.5; -0.5];
+%     Ru = 0.4;
+
+    Cu = [-0.3; -0.3];
+    Ru = 0.4;
+    
+    theta_c = 5*pi/4;
+    w_c = [cos(theta_c); sin(theta_c)];
+    c2f = w_c(1)*(y(1) - Cu(1)) + w_c(2) * (y(2) - Cu(2)); 
+    
+    Xu = [Ru^2 - sum((y-Cu).^2); c2f]>=0;
+    lsupp1.X_unsafe = Xu;
+    lsupp1.dist = (x-y)'*(x-y);
+%     p1 = -sum((x-Cu).^2);
 
 %     p1 = -sum(x);
 %     p1 = [];
@@ -71,7 +84,14 @@ if SETUP
     f1 = [-x(2) + x(1)*x(2) + k;
          -x(2) - x(1) + x(1)^3];
 
-    loc1 = rl_location(lsupp1, {f1}, p1, 1);
+    CSP = 1;
+    if CSP
+        loc1 = location_distance_csp(lsupp1, {f1}, 1);
+    else
+        loc1 = location_distance(lsupp1, {f1}, 1);
+    end
+     
+%     loc1 = rl_location(lsupp1, {f1}, p1, 1);
 
     
         
@@ -100,30 +120,34 @@ end
 %% solve the system and get peak estimates
 if SOLVE
     
-    PM =  peak_manager_hy({loc1}, {gleft, gright});
+    PM =  distance_manager_hy({loc1}, {gleft, gright});
+%     PM =  peak_manager_hy({loc1}, {gleft, gright});
 
-%     %T = 5, N =5
+%CSP: distances (norm squared)
+
+%     Cu = [-0.5; -0.5];
+%     Ru = 0.4;
 %     order = 1; %0
 %     order = 2; %0
-% %     order = 3; % 0
-%     order = 4; % 0
-%     order=5; % -0.010209422355083
-%     order = 6; % -0.019157038491643
+%     order = 3; % 0.2157 
+%     order = 4; % 0.3295 
+%     order=5; %0.3691
+%     order = 6; % 0.3761 
 
-%T = 5, N = 5
-% order = 1; %0
-%     order = 2; %0
-%     order = 3; % -0.364417031631220
-%     order = 4; % -0.525881280208672
-%    order = 5; %-0.565907365740604
-   order = 6; %-0.572099964307251
+
+%     Cu = [-0.3; -0.3];
+%     Ru = 0.4;
+%     
+%     theta_c = 5*pi/4;
+order=6;
+
 
 %     [objective, mom_con, supp_con] =  PM.cons(order);
     [sol, PM] = PM.run(order, Tmax);    
 %     sol = PM.run(order) ;
     obj_rec = sol.obj_rec;
 %     fprintf('abs(x1) bound: %0.4f \n', sqrt(sol.obj_rec))
-fprintf('-norm(x)^2 bound: %0.4f \n', (sol.obj_rec))
+    fprintf('bound: %0.4f \n', (sol.obj_rec))
     p_est = sqrt(sol.obj_rec);
     [rr, mm, cc] = PM.recover();
 end
@@ -165,9 +189,25 @@ end
 
 %% plot trajectories
 if PLOT
-
+    load('rl_traj_5.mat', 'osm')
+    clf
+   
     RPlot = rl_plotter(osm, osd, R0, C0, Cu);
+%     hold on
     RPlot.rl_plot();
+    title('hi')
+    
+%     theta_c = 3*pi/2;
+    theta_half_range = linspace(theta_c-pi/2, theta_c + pi/2, 200);
+    Rot_mat = [cos(theta_c+pi/2), -sin(theta_c+pi/2); sin(theta_c+pi/2), cos(theta_c+pi/2)];
+    x_dist_eps = Rot_mat*dist_contour(200, Ru, sqrt(obj_rec)) + Cu;
+    circ_half = [cos(theta_half_range); sin(theta_half_range)];
+    Xu = Cu + circ_half* Ru;
+    patch(Xu(1, :), Xu(2, :), 'r', 'Linewidth', 3, 'EdgeColor', 'none', 'DisplayName', 'Unsafe Set')
+
+    plot(x_dist_eps(1, :), x_dist_eps(2, :), 'r', 'DisplayName', 'Distance Contour', 'LineWidth', 2)
+
+%     RPlot.rl_plot(obj_rec);
     
 %     figure(3);
 %     osc = osd.locations{1};
@@ -183,4 +223,23 @@ if PLOT
 % 
 % %     CPlot.nonneg_jump();
 % %     CPlot.objective_plot();
+end
+
+
+function x_dist = dist_contour(Ntheta, R, c)
+    %compute a contour at distance c away from the half-circle with N_theta
+    %sample points
+
+
+    theta_q1 = linspace(0, pi/2, Ntheta);
+    theta_q2 = linspace(pi/2, pi, Ntheta);
+    theta_q34 = linspace(pi, 2*pi, 2*Ntheta);
+
+    %contour level
+    
+
+    x_right = [c*cos(theta_q1)+R; c*sin(theta_q1)];
+    x_left = [c*cos(theta_q2)-R; c*sin(theta_q2)];
+    x_bottom = [(c+R)*cos(theta_q34); (c+R)*sin(theta_q34)];
+    x_dist = [x_right, x_left, x_bottom];
 end

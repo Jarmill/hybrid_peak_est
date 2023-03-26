@@ -10,7 +10,7 @@
 SETUP = 1;
 SOLVE = 1;
 SAMPLE = 0;
-PLOT = 1;
+PLOT = 0;
 % rl_analyze_traj;
 
 

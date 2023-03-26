@@ -8,7 +8,7 @@ for i = 1:length(PM.loc)
     loc_curr = PM.loc{i};
     for j = 1:length(osd.locations{i})
         osc = osd.locations{i}{j};
-        osd.locations{i}{j}.nonneg = PM.loc{i}.nonneg(osc.t, osc.x, [], []);
+%         osd.locations{i}{j}.nonneg = PM.loc{i}.nonneg(osc.t, osc.x, [], []);
         osd.locations{i}{j}.v = PM.loc{i}.v_eval(osc.t, osc.x, []);
         osd.locations{i}{j}.obj = PM.loc{i}.obj_eval(osc.t, osc.x);
     end
@@ -27,6 +27,6 @@ end
     RPlot = rl_plotter(osm, osd, R0, C0, Cu);
     RPlot.rl_plot(obj_rec);
 %     CPlot.cube_plot(sqrt(sol.obj_rec));
-    RPlot.nonneg_loc();
-    RPlot.aux_plot();
-    RPlot.nonneg_jump();
+%     RPlot.nonneg_loc();
+%     RPlot.aux_plot();
+%     RPlot.nonneg_jump();
