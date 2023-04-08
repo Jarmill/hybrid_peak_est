@@ -10,7 +10,7 @@
 SETUP = 1;
 SOLVE = 1;
 SAMPLE = 0;
-PLOT = 1;
+PLOT = 0;
 % rl_analyze_traj;
 
 
@@ -123,7 +123,7 @@ if SOLVE
     PM =  distance_manager_hy({loc1}, {gleft, gright});
 %     PM =  peak_manager_hy({loc1}, {gleft, gright});
 
-%CSP: distances (norm squared)
+%CSP: distances (norm)
 
 %     Cu = [-0.5; -0.5];
 %     Ru = 0.4;
@@ -135,11 +135,17 @@ if SOLVE
 %     order = 6; % 0.3761 
 
 
-%     Cu = [-0.3; -0.3];
+    Cu = [-0.3; -0.3];
+    order=1; %0
+%     order=2; %0
+%     order=3; %0.1647
+%     order=4; %0.2643
+%     order=5; %0.2853
+%     order=6; %0.2877
 %     Ru = 0.4;
 %     
 %     theta_c = 5*pi/4;
-order=6;
+% order=6;    
 
 
 %     [objective, mom_con, supp_con] =  PM.cons(order);
