@@ -63,12 +63,19 @@ classdef manager_hy_interface < manager_interface
                 supp_con = [supp_con; loc_curr.supp_con()];
 
                 %find moment constraints of current location
-                [obj_curr, obj_con_curr_ineq, obj_con_curr_eq] = loc_curr.objective_con();                                
+                [obj_curr_max, obj_con_curr_ineq, obj_con_curr_eq] = loc_curr.objective_con(d);                                
+                
+                %deal with possible chance (mean/quantile) SDE objective
+                %modifications over here
+                [obj_curr, cons_eq_obj] = obj.objective_process(obj_curr_max);
                 
                 if ~isempty(obj_curr)
                     objective = objective + obj_curr;
                 end
-                obj_con{i} = [obj_con_curr_ineq; obj_con_curr_eq];
+                
+                %hack the SDE content over here
+                
+                obj_con{i} = [obj_con_curr_ineq; obj_con_curr_eq; cons_eq_obj];
                 
                 liou_con{i} = loc_curr.liou_con(d);  
                 
@@ -154,6 +161,18 @@ classdef manager_hy_interface < manager_interface
 
         end                    
     
+        
+        function [objective, cons_eq_obj] = objective_process(obj, obj_max)
+            %OBJECTIVE_PROCESS implement the possible chance-constraints in
+            %case of stochastic systems.
+            
+            %by default, consider only the mean-maximization task.
+            
+            %other code could involve chance-bounds (concentration bounds
+            %such as cantelli and vp)
+            objective = obj_max(1);
+            cons_eq_obj = [];
+        end
  
         function s_out = mmat_corner(obj)
             %get the top corner of the moment matrix for all measures

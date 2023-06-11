@@ -6,9 +6,8 @@
 % conditioned to yield demonstrative and feasible solutions for hybrid peak
 % estimation
 %
-% There is bounded time-dependent noise (switching) in this example. 
-% This script investigates whether the auxiliary function v(t, x) decreases 
-% along noise-free trajectories
+% There is stochastic time-dependent noise in this example. This script investigates whether the
+% auxiliary function v(t, x) decreases along noise-free trajectories
 
 
 
@@ -24,8 +23,7 @@ if SETUP
     mset clear
     mpol('t');
     mpol('x', 3, 1);
-%     mpol('w', 1, 1);
-    w=0;
+
     vars = struct('t', t, 'x', x);
 
 %     Tmax = 5;
@@ -44,12 +42,15 @@ if SETUP
 %     R1 = 1;
     R1 = 1.5;
     
+    sigma = 0.1;
+    
     X01 = [r2 == R0^2];
 %     X01 = [R0;0;0];
     
     L = R1*[1;1;1];
         
-    lsupp1 = loc_support(vars);
+    lsupp1 = chance_support(vars);
+    lsupp1.bound_type = 'mean';
     lsupp1 = lsupp1.set_box(L);
     lsupp1.X = [lsupp1.X; critfw <= R1^2];
     lsupp1.X_init = X01;
@@ -59,16 +60,20 @@ if SETUP
 %     p1 = x(1)^2;
     p1 = [];
 %     f1 = [x(2); -x(1) + x(3); x(1) + (2*x(2) + 3*x(3))*(1+x(3)^2) + w];
-f1 = [x(2); (-x(1) + x(3)); x(1) + (2*x(2) + 3*x(3))*(1+x(3)^2) + w];
+f1 = [x(2); (-x(1) + x(3)); x(1) + (2*x(2) + 3*x(3))*(1+x(3)^2)];
+g1 = [0; 0; sigma];
 %     f1 = [x(2); -x(1) + x(3); x(1) + (2*x(2) + 3*x(3)) + w];
-    loc1 = location(lsupp1, {f1 + [0;0;1], f1 + [0;0;-1]}, p1, 1);
 
+    dyn1 = struct('f', f1, 'g', g1);
+
+    loc1 = location_sde(lsupp1, dyn1, p1, 1);
     
         
     %box 2 (control)
     X02 = [];
     
-    lsupp2 = loc_support(vars);
+    lsupp2 = chance_support(vars);
+    lsupp2.bound_type = 'mean';
     lsupp2 = lsupp2.set_box(L);
     lsupp2.X = [lsupp2.X; r2 >= R0^2];
     lsupp2.X_init = X02;
@@ -80,11 +85,14 @@ f1 = [x(2); (-x(1) + x(3)); x(1) + (2*x(2) + 3*x(3))*(1+x(3)^2) + w];
     
 %     slow2 = 0.75;
     slow2 = 1;
-    f2 = [x(2); (-x(1) + x(3)); -x(1) - (2*x(2) + 3*x(3)) + w];
+    f2 = [x(2); (-x(1) + x(3)); -x(1) - (2*x(2) + 3*x(3))];
+    g2 = [0; 0; sigma];
     p2 = x(1)^2;
 %     p2 = [x(1)^2; x(2)^2];
 
-    loc2 = location(lsupp2, {f2+[0;0;1], f2+[0;0;-1]}, p2, 2);
+    dyn2 = struct('f', f2, 'g', g2);
+
+    loc2 = location_sde(lsupp2, dyn2, p2, 2);
     
     %guards
     R  = x; %reset map
@@ -109,12 +117,12 @@ if SOLVE
     
     PM =  peak_manager_hy({loc1, loc2}, {gfw, gbk});
 
-
-order = 1; %2.250
-order = 2; %1.4039
-order = 3; %1.0350
-order = 4; %0.9790
-order = 5; %0.9660
+%SDE with sigma=0.1
+% order = 1; % 2.2500
+% order = 2; % 0.6904 
+% order = 3; %0.5174 
+% order = 4; %0.4691
+order = 5; %0.4525 
 % order = 4;
 
     [objective, mom_con, supp_con] =  PM.cons(order);
