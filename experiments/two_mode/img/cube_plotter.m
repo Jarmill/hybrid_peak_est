@@ -28,13 +28,13 @@ classdef cube_plotter < plotter_hy_interface
             clf
 
             loc_names = {'No Control', 'Controlled'};
-%             ax1 = subplot(1,2,1);
-            ax1 = subplot(2,1,1);
+            ax1 = subplot(1,2,1);
+%             ax1 = subplot(2,1,1);
             hold on
             axis off
 pbaspect([1,1,1])
-%             ax2 = subplot(1,2,2);
-            ax2 = subplot(2,1,2);
+            ax2 = subplot(1,2,2);
+%             ax2 = subplot(2,1,2);
             hold on
             axlist = [ax1, ax2];
             axis off

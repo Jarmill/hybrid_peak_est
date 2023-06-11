@@ -138,8 +138,8 @@ end
 if SAMPLE
     rng(25, 'twister')
 %     smp1 = struct('x', @() sphere_sample(1, 3)'*R0);
-% smp1 = struct('x', @() sphere_sample(1, 3)'*(1e-3+R0));
-    smp1 = struct('x', @() [0.5; 0.5; 0.5]);
+smp1 = struct('x', @() sphere_sample(1, 3)'*(1e-3+R0));
+%     smp1 = struct('x', @() [R0; 0; 0]);
 
     smp2 = struct('x', []);
     
@@ -158,9 +158,9 @@ if SAMPLE
     HS = sampler_hy({LS1, LS2}, {gfw, gbk});
     
     %     osh = HS.sample_traj(0, [0;0;0.03], 1, 5);
-%     Nsample = ;
+    Nsample = 1;
 %     Nsample = 20;
-    Nsample = 50;
+%     Nsample = 50;
 %     Nsample = 5;
 
 
@@ -179,8 +179,8 @@ end
 %% plot trajectories
 if PLOT
     CPlot = cube_plotter(osm, osd, R0, R1);
-    CPlot.cube_plot();
-%     CPlot.cube_plot(sqrt(sol.obj_rec));
+%     CPlot.cube_plot();
+    CPlot.cube_plot(sqrt(sol.obj_rec));
 %     CPlot.nonneg_loc();
 %     CPlot.aux_plot();
 %     CPlot.nonneg_jump();
