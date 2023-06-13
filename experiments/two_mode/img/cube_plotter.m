@@ -31,7 +31,7 @@ classdef cube_plotter < plotter_hy_interface
             ax1 = subplot(1,2,1);
 %             ax1 = subplot(2,1,1);
             hold on
-            axis off
+%             axis off
 pbaspect([1,1,1])
                 view(3)
                 
@@ -39,7 +39,7 @@ pbaspect([1,1,1])
 %             ax2 = subplot(2,1,2);
             hold on
             axlist = [ax1, ax2];
-            axis off
+%             axis off
 pbaspect([1,1,1])
                 view(3)
 
@@ -51,7 +51,7 @@ pbaspect([1,1,1])
                 zlabel(axlist(i), 'x_3')
                 
 
-%                 title(axlist(i), loc_names{i}, 'FontSize', 16)
+                title(axlist(i), loc_names{i}, 'FontSize', 16)
                 [X, Y, Z] = sphere(30);
                 surf(axlist(i), obj.R0*X, obj.R0*Y, obj.R0*Z, 'FaceColor', 0.5*[1,1,1], 'FaceAlpha', obj.falpha, 'edgecolor', 'none');
 

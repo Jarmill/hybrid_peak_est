@@ -26,5 +26,5 @@ save('traj_stoch_cube_half.mat', 'osd', 'param');
 
 %% plot
     CPlot = cube_plotter([], osd, param.R0, param.R1);
-    CPlot.cube_plot();
+    CPlot.cube_plot(0.4525);
 
