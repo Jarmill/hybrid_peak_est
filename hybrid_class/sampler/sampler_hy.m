@@ -118,11 +118,14 @@ classdef sampler_hy
             g_mask = find(cellfun(@(g) g.src.id == id, obj.guards));
             N_guards = length(g_mask);
             
+            jump_tol = 1.5e-6;
+            jump_tol = 0.05;
+            
             supp_g = zeros(N_guards, 1);
             possible_g = [];
             supp_loc(1) = obj.loc_smp{id}.loc.supp_eval(t, x);
             for j = 1:N_guards
-                supp_g(j) = obj.guards{g_mask(j)}.supp_eval(t, x, 1.5e-6);
+                supp_g(j) = obj.guards{g_mask(j)}.supp_eval(t, x, jump_tol);
                 if supp_g(j)
                     possible_g = [possible_g; obj.guards{g_mask(j)}.id];
                 end

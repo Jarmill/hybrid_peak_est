@@ -137,27 +137,9 @@ end
 %% sample trajectories
 if SAMPLE
     rng(25, 'twister')
-%     smp1 = struct('x', @() sphere_sample(1, 3)'*R0);
-smp1 = struct('x', @() sphere_sample(1, 3)'*(1e-3+R0));
-%     smp1 = struct('x', @() [R0; 0; 0]);
 
-    smp2 = struct('x', []);
+    param = struct('R0', R0, 'R1', R1, 'K', K, 'sigma', sigma, 'L', L);
     
-    
-    LS1 = sampler_sde_uncertain(loc1, smp1);
-    
-    LS2 = sampler_sde_uncertain(loc2, smp2);
-    
-    
-    LS1.mu = 0.01;
-    LS2.mu = 0.01;
-
-%     LS1.mu = 0.03;
-%     LS2.mu = 0.03;
-    
-    HS = sampler_hy({LS1, LS2}, {gfw, gbk});
-    
-    %     osh = HS.sample_traj(0, [0;0;0.03], 1, 5);
     Nsample = 1;
 %     Nsample = 20;
 %     Nsample = 50;

@@ -24,7 +24,7 @@ classdef cube_plotter < plotter_hy_interface
         function [F, ax1, ax2] = cube_plot(obj,p_est)
             %plot trajectories of the system in the unit cube [-1,1]^3
             
-            F = figure(1);
+            F = figure(100);
             clf
 
             loc_names = {'No Control', 'Controlled'};
@@ -33,12 +33,15 @@ classdef cube_plotter < plotter_hy_interface
             hold on
             axis off
 pbaspect([1,1,1])
+                view(3)
+                
             ax2 = subplot(1,2,2);
 %             ax2 = subplot(2,1,2);
             hold on
             axlist = [ax1, ax2];
             axis off
 pbaspect([1,1,1])
+                view(3)
 
             for i = 1:length(obj.osd.locations) %i=1:2
         %         subplot(1, 2, i)
@@ -79,9 +82,9 @@ pbaspect([1,1,1])
 
                 end 
         %         axis square
-                hlink = linkprop([ax1,ax2],{'CameraPosition','CameraUpVector', 'CameraTarget'});
-                setappdata(gcf, 'theLink', hlink)
-                view(3)
+%                 hlink = linkprop([ax1,ax2],{'CameraPosition','CameraUpVector', 'CameraTarget'});
+%                 setappdata(gcf, 'theLink', hlink)
+
 
 %                 xlim(1.1*p_est*[-1;1])
 
@@ -107,7 +110,8 @@ pbaspect([1,1,1])
                     
                 end
             end
-            linkprop([ax2; ax1], {'XLim', 'YLim', 'ZLim', 'CameraPosition', 'CameraUpVector', 'CameraViewAngle', 'CameraTarget'});
+%             linkprop([ax2; ax1], {'XLim', 'YLim', 'ZLim', 'CameraPosition', 'CameraUpVector', 'CameraViewAngle', 'CameraTarget'});
+            linkprop([ax2; ax1], {'XLim', 'YLim', 'ZLim'});
         end
     end
 end
