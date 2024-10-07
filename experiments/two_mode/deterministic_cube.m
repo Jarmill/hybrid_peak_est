@@ -12,8 +12,8 @@
 
 
 SETUP = 1;
-SOLVE = 1;
-SAMPLE = 0;
+SOLVE = 0;
+SAMPLE = 1;
 PLOT = 0;
 
 
@@ -106,22 +106,34 @@ end
 %% solve the system and get peak estimates
 if SOLVE
     
+    orderlist = 1:5;
+    % orderlist = [1; 2; 1];
+    p_order = zeros(length(orderlist), 1);
+    time_order = zeros(length(orderlist), 1);
     PM =  peak_manager_hy({loc1, loc2}, {gfw, gbk});
 
 %     order = 1; %2.250 
 %     order = 2; %0.651423828753876
 %     order = 3; % 0.464284255422197
-    order = 4; %0.407625094582554
+    % order = 4; %0.407625094582554
 %     order=5; %0.3958
 
 %     [objective, mom_con, supp_con] =  PM.cons(order);
-    [sol, PM] = PM.run(order, Tmax);    
-%     sol = PM.run(order) ;
-    obj_rec = sol.obj_rec;
-%     fprintf('abs(x1) bound: %0.4f \n', sqrt(sol.obj_rec))
-fprintf('x1^2 bound: %0.4f \n', (sol.obj_rec))
-    p_est = sqrt(sol.obj_rec);
-    [rr, mm, cc] = PM.recover();
+    for i = 1:length(orderlist)
+        order = orderlist(i);
+        tic
+       
+        [sol, PM] = PM.run(order, Tmax);
+        time_order(i) = toc;
+    %     sol = PM.run(order) ;
+            obj_rec = sol.obj_rec;
+            p_order(i) = obj_rec;
+            
+         %     fprintf('abs(x1) bound: %0.4f \n', sqrt(sol.obj_rec))
+        fprintf('x1^2 bound: %0.4f \n', (sol.obj_rec))
+            p_est = sqrt(sol.obj_rec);
+            [rr, mm, cc] = PM.recover();
+    end
 end
 
 %% sample trajectories
@@ -147,14 +159,17 @@ if SAMPLE
 %     Nsample = 1;
 % Nsample = 10;
 %     Nsample = 20;
-    Nsample = 50;
+    % Nsample = 50;
+    Nsample = 1000;
 %     Nsample = 5;
+
 
 
     [osm, osd] = HS.sample_traj_multi(Nsample, Tmax);
     
     t_end = cellfun(@(o) o.t_end, osm);
     
+    save('traj/det_cube_big.m', 'osm', 'osd')
 end
 
 %% plot trajectories

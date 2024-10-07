@@ -25,11 +25,12 @@ classdef distance_manager_hy < manager_hy_interface
             % https://docs.mosek.com/9.2/pythonfusion/parameters.html
             
             
-
+            tic
             P = msdp(min(objective), mom_con, supp_con);
-
+            timerec = toc;
             sol = struct;
-            [sol.status,sol.obj_rec, ~,sol.dual_rec]= msol(P);        
+            [sol.status,sol.obj_rec, ~,sol.dual_rec]= msol(P);
+            sol.solver_time = timerec;
         end  
         
         %% Formulating and solving program

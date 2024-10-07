@@ -63,7 +63,7 @@ classdef manager_hy_interface < manager_interface
                 supp_con = [supp_con; loc_curr.supp_con()];
 
                 %find moment constraints of current location
-                [obj_curr_max, obj_con_curr_ineq, obj_con_curr_eq] = loc_curr.objective_con(d);                                
+                [obj_curr_max, obj_con_curr_ineq, obj_con_curr_eq] = loc_curr.objective_con();                                
                 
                 %deal with possible chance (mean/quantile) SDE objective
                 %modifications over here
