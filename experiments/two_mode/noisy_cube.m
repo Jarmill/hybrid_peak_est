@@ -110,20 +110,31 @@ if SOLVE
     PM =  peak_manager_hy({loc1, loc2}, {gfw, gbk});
 
 
-order = 1; %2.250
-order = 2; %1.4039
-order = 3; %1.0350
-order = 4; %0.9790
-order = 5; %0.9660
+% order = 1; %2.250
+% order = 2; %1.4039
+% order = 3; %1.0350
+% order = 4; %0.9790
+% order = 5; %0.9660
 % order = 4;
-
-    [objective, mom_con, supp_con] =  PM.cons(order);
-%     [sol, PM] = PM.run(order, Tmax);    
-    sol = PM.run(order) ;
-%     fprintf('abs(x1) bound: %0.4f \n', sqrt(sol.obj_rec))
-fprintf('x1^2 bound: %0.4f \n', (sol.obj_rec))
-    p_est = sqrt(sol.obj_rec);
-    [rr, mm, cc] = PM.recover();
+ p_order = zeros(length(orderlist), 1);
+    time_order = zeros(length(orderlist), 1);
+     for i = 1:length(orderlist)
+    
+    %     [objective, mom_con, supp_con, len_dual] =  PM.cons(order);
+      % tic
+            [sol, PM] = PM.run(orderlist(i), Tmax);
+            time_order(i) = sol.solver_time;
+            p_order(i) = sol.obj_rec;
+    %     [sol, = PM.run(order) ;
+    %     fprintf('abs(x1) bound: %0.4f \n', sqrt(sol.obj_rec))
+    fprintf('bound: %0.4f \n', (sol.obj_rec))
+        p_est = sqrt(sol.obj_rec);
+        % [rr, mm, cc] = PM.recover();
+    
+        obj_rec = sol.obj_rec;
+        save('noisy_cube.mat', 'time_order', 'p_order', 'orderlist');
+     end
+    % [rr, mm, cc] = PM.recover();
 end
 
 %% sample trajectories

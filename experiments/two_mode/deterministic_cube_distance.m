@@ -173,9 +173,9 @@ order = 5; %0.051026222539867
     
     %     [objective, mom_con, supp_con, len_dual] =  PM.cons(order);
       % tic
-            [sol, PM] = PM.run(order, Tmax);
+            [sol, PM] = PM.run(orderlist(i), Tmax);
             time_order(i) = sol.solver_time;
-     
+            p_order(i) = sol.obj_rec;
     %     [sol, = PM.run(order) ;
     %     fprintf('abs(x1) bound: %0.4f \n', sqrt(sol.obj_rec))
     fprintf('bound: %0.4f \n', (sol.obj_rec))

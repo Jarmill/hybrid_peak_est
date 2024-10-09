@@ -162,15 +162,28 @@ order = 5; %0.007941915368103
 
 
 
-%     [objective, mom_con, supp_con, len_dual] =  PM.cons(order);
-    [sol, PM] = PM.run(order);    
-%     [sol, = PM.run(order) ;
-%     fprintf('abs(x1) bound: %0.4f \n', sqrt(sol.obj_rec))
-fprintf('bound: %0.4f \n', (sol.obj_rec))
-    p_est = sqrt(sol.obj_rec);
-    [rr, mm, cc] = PM.recover();
-
-    obj_rec = sol.obj_rec;
+ orderlist = 1:5;
+ % orderlist = 1;
+ 
+    % orderlist = [1; 2; 1];
+    p_order = zeros(length(orderlist), 1);
+    time_order = zeros(length(orderlist), 1);
+     for i = 1:length(orderlist)
+    
+    %     [objective, mom_con, supp_con, len_dual] =  PM.cons(order);
+      % tic
+            [sol, PM] = PM.run(orderlist(i), Tmax);
+            time_order(i) = sol.solver_time;
+            p_order(i) = sol.obj_rec;
+    %     [sol, = PM.run(order) ;
+    %     fprintf('abs(x1) bound: %0.4f \n', sqrt(sol.obj_rec))
+    fprintf('bound: %0.4f \n', (sol.obj_rec))
+        p_est = sqrt(sol.obj_rec);
+        % [rr, mm, cc] = PM.recover();
+    
+        obj_rec = sol.obj_rec;
+        save('deterministic_cube_distance_near.mat', 'time_order', 'p_order', 'orderlist');
+     end
 end
 
 %% sample trajectories

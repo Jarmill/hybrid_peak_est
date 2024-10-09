@@ -125,13 +125,25 @@ if SOLVE
 order = 5; %0.4525 
 % order = 4;
 
-    [objective, mom_con, supp_con] =  PM.cons(order);
-%     [sol, PM] = PM.run(order, Tmax);    
-    sol = PM.run(order) ;
-%     fprintf('abs(x1) bound: %0.4f \n', sqrt(sol.obj_rec))
-fprintf('x1^2 bound: %0.4f \n', (sol.obj_rec))
-    p_est = sqrt(sol.obj_rec);
-    [rr, mm, cc] = PM.recover();
+ p_order = zeros(length(orderlist), 1);
+    time_order = zeros(length(orderlist), 1);
+     for i = 1:length(orderlist)
+    
+    %     [objective, mom_con, supp_con, len_dual] =  PM.cons(order);
+      % tic
+            [sol, PM] = PM.run(orderlist(i), Tmax);
+            time_order(i) = sol.solver_time;
+            p_order(i) = sol.obj_rec;
+    %     [sol, = PM.run(order) ;
+    %     fprintf('abs(x1) bound: %0.4f \n', sqrt(sol.obj_rec))
+    fprintf('bound: %0.4f \n', (sol.obj_rec))
+        p_est = sqrt(sol.obj_rec);
+        % [rr, mm, cc] = PM.recover();
+    
+        obj_rec = sol.obj_rec;
+        save('stoch_cube.mat', 'time_order', 'p_order', 'orderlist');
+     end
+    % [rr, mm, cc] = PM.recover();
 end
 
 %% sample trajectories
@@ -160,7 +172,8 @@ if SAMPLE
     %     osh = HS.sample_traj(0, [0;0;0.03], 1, 5);
 %     Nsample = ;
 %     Nsample = 20;
-    Nsample = 50;
+    % Nsample = 50;
+    Nsample = 5000;
 %     Nsample = 5;
 
 
@@ -169,9 +182,9 @@ if SAMPLE
     t_end = cellfun(@(o) o.t_end, osm);
     
 %     osm = SMP.sample_traj_multi(Ntraj, lsupp.Tmax);
-    save('stoch_cube_traj.mat', 'osm', 'osd')
+    save('traj/stoch_cube_traj_big.mat', 'osm', 'osd')
 else
-    load('stoch_cube_traj.mat');
+    load('traj/stoch_cube_traj_big.mat');
     Ntraj = length(osm);
 end
     
