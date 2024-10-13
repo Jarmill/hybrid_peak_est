@@ -107,7 +107,7 @@ g1 = [0; 0; sigma];
     gfw = guard(1, vars, loc1, loc2, Xfw, R);
     gbk = guard(2, vars, loc2, loc1, Xbk, R);
     
-    Zeno_cap = 5;
+    Zeno_cap = Inf;
     gfw.zeno_cap = Zeno_cap;
     gbk.zeno_cap = Zeno_cap;
 end
@@ -152,11 +152,11 @@ if SAMPLE
 %     smp1 = struct('x', @() sphere_sample(1, 3)'*R0);
 % smp1 = struct('x', @() sphere_sample(1, 3)'*(1e-3+R0));
 
-Nbatch = 5;
+% Nbatch = 5;
 Nsample = 5;
-    osm_list = 
+    % osm_list = 
 
-    for i = 1:Nbatch
+    % for i = 1:Nbatch
         smp1 = struct('x', @() [0.5; 0.5; 0.5]);
     
         smp2 = struct('x', []);
@@ -189,7 +189,7 @@ Nsample = 5;
         
         t_end = cellfun(@(o) o.t_end, osm);
         
-    end
+    
 %     osm = SMP.sample_traj_multi(Ntraj, lsupp.Tmax);
     save('traj/stoch_cube_traj_big.mat', 'osm', 'osd')
 else
