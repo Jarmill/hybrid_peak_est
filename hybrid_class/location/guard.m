@@ -74,7 +74,11 @@ classdef guard < meas_base
         function con = zeno_con(obj)
             %zeno execution constraint
             %at most (zeno_cap) transitions will occur on the guard
-            con = [obj.mass() <= obj.zeno_cap];
+            if (obj.zeno_cap > 0) && (obj.zeno_cap < Inf)               
+                con = [obj.mass() <= obj.zeno_cap];
+            else
+                con = [];
+            end
         end
         
         function mom_out = reset_push(obj, d)

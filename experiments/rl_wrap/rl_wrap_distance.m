@@ -8,9 +8,9 @@
 
 
 SETUP = 1;
-SOLVE = 1;
+SOLVE = 0;
 SAMPLE = 0;
-PLOT = 0;
+PLOT = 1;
 % rl_analyze_traj;
 
 
@@ -110,7 +110,8 @@ if SETUP
     gright = guard(2, vars, loc1, loc1, Xright, Rright);
     
     
-    Zeno_cap = 5;
+    Zeno_cap = Inf;
+    % Zeno_cap = 5;
 %     Zeno_cap = 10;
 %     Zeno_cap = 15;
     gleft.zeno_cap = Zeno_cap;
@@ -149,17 +150,13 @@ if SOLVE
 
 
 orderlist = 1:6;
- % orderlist = 1;
- 
-    % orderlist = [1; 2; 1];
-    % orderlist = 6;
     p_order = zeros(length(orderlist), 1);
     time_order = zeros(length(orderlist), 1);
      for i = 1:length(orderlist)
     
     %     [objective, mom_con, supp_con, len_dual] =  PM.cons(order);
       % tic
-            [sol, PM] = PM.run(orderlist(i), Tmax);
+            [PM, sol] = PM.run(orderlist(i), Tmax);
             time_order(i) = sol.solver_time;
             p_order(i) = sol.obj_rec;
     %     [sol, = PM.run(order) ;
@@ -169,7 +166,7 @@ orderlist = 1:6;
         % [rr, mm, cc] = PM.recover();
     
         obj_rec = sol.obj_rec;
-        save('rl_wrap_distance.mat', 'time_order', 'p_order', 'orderlist');
+        save('rl_wrap_distance_nocap.mat', 'time_order', 'p_order', 'orderlist');
      end
 end
 
@@ -195,10 +192,11 @@ if SAMPLE
     %     osh = HS.sample_traj(0, [0;0;0.03], 1, 5);
 %     Nsample = 1;
 % Nsample = 10;
-%     Nsample = 20;
+    Nsample = 20;
 % Nsample = 30;
 %     Nsample = 50;
-    Nsample = 120;
+    % Nsample = 120;
+    % Nsample = 
 %     Nsample = 5;
 
 
@@ -210,15 +208,28 @@ end
 
 %% plot trajectories
 if PLOT
-    load('rl_traj_5.mat', 'osm')
+    load('rl_traj_5.mat', 'osm', 'osd')
     clf
    
+    mm = -Inf;
+    % dd = @(x) aff_half_circ_dist(x', Ru, theta_c, Cu);
+
+    dd = @(x) -norm(x - [0.5, 0.3]');
+    for i = 1:length(osd.locations{1})
+        traj = osd.locations{1}{i};
+        for j = 1:length(traj.x)
+            mm = max(mm, dd(traj.x(j, :)));
+        end
+    end
+    
+
     RPlot = rl_plotter(osm, osd, R0, C0, Cu);
 %     hold on
     RPlot.rl_plot();
     title('hi')
     
 %     theta_c = 3*pi/2;
+    obj_rec = 0.2877^2;
     theta_half_range = linspace(theta_c-pi/2, theta_c + pi/2, 200);
     Rot_mat = [cos(theta_c+pi/2), -sin(theta_c+pi/2); sin(theta_c+pi/2), cos(theta_c+pi/2)];
     x_dist_eps = Rot_mat*dist_contour(200, Ru, sqrt(obj_rec)) + Cu;
@@ -263,4 +274,35 @@ function x_dist = dist_contour(Ntheta, R, c)
     x_left = [c*cos(theta_q2)-R; c*sin(theta_q2)];
     x_bottom = [(c+R)*cos(theta_q34); (c+R)*sin(theta_q34)];
     x_dist = [x_right, x_left, x_bottom];
+end
+
+function dist_out = half_circ_dist(x_in, R)
+    %return the L2 distance  between the point x_in and the half circle
+    %||x_in||^2 <= R^2 intersect x_in(2) <= 0.
+%     reshape(x_in, [], 1);
+    if x_in(2) >= 0
+        %flat region
+        if x_in(1) < -R
+            dist_out = hypot(x_in(1)+R, x_in(2));
+        elseif x_in(1) > R
+            dist_out = hypot(x_in(1)-R, x_in(2));
+        else
+            dist_out = x_in(2);
+        end
+    else
+        %circle region
+        dist_out = max(norm(x_in, 2)-R, 0);
+    end
+
+end
+
+function dist_out = aff_half_circ_dist(x_in, R, theta_c, Cu)
+
+    theta_cf = theta_c - 3*pi/2;
+    % theta_cf = theta_c;
+    Rot_mat = [cos(theta_cf) -sin(theta_cf); sin(theta_cf) cos(theta_cf)];
+    x_aff = Rot_mat'*(x_in - Cu);
+    
+    dist_out = half_circ_dist(x_aff, R);
+
 end

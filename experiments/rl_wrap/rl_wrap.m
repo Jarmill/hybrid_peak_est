@@ -91,7 +91,7 @@ if SETUP
     gright = guard(2, vars, loc1, loc1, Xright, Rright);
     
     
-    Zeno_cap = 5;
+    Zeno_cap = 0;
 %     Zeno_cap = 10;
 %     Zeno_cap = 15;
     gleft.zeno_cap = Zeno_cap;
@@ -129,7 +129,7 @@ orderlist = 1:6;
     
     %     [objective, mom_con, supp_con, len_dual] =  PM.cons(order);
       % tic
-            [sol, PM] = PM.run(orderlist(i), Tmax);
+            [PM, sol] = PM.run(orderlist(i), Tmax);
             time_order(i) = sol.solver_time;
             p_order(i) = sol.obj_rec;
     %     [sol, = PM.run(order) ;

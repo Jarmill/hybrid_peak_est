@@ -13,9 +13,9 @@
 
 
 SETUP = 1;
-SOLVE = 1;
-SAMPLE = 0;
-PLOT = 0;
+SOLVE = 0;
+SAMPLE = 1;
+PLOT = 1;
 
 
 %% setup the locations and guards
@@ -122,7 +122,7 @@ if SOLVE
     
     %     [objective, mom_con, supp_con, len_dual] =  PM.cons(order);
       % tic
-            [sol, PM] = PM.run(orderlist(i), Tmax);
+            [PM, sol] = PM.run(orderlist(i), Tmax);
             time_order(i) = sol.solver_time;
             p_order(i) = sol.obj_rec;
     %     [sol, = PM.run(order) ;
@@ -161,14 +161,16 @@ if SAMPLE
     
     %     osh = HS.sample_traj(0, [0;0;0.03], 1, 5);
 %     Nsample = 1;
-%     Nsample = 20;
-    Nsample = 50;
+    % Nsample = 20;
+    % Nsample = 50;
+    Nsample = 500;
 %     Nsample = 5;
 
 
     [osm, osd] = HS.sample_traj_multi(Nsample, Tmax);
     
     t_end = cellfun(@(o) o.t_end, osm);
+    save('noisy_cube_big.mat', 'osm', 'osd')
     
 end
 

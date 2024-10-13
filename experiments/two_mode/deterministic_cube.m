@@ -12,11 +12,9 @@
 
 
 SETUP = 1;
-SOLVE = 0;
-SAMPLE = 1;
+SOLVE = 1;
+SAMPLE = 0;
 PLOT = 0;
-
-
 %% setup the locations and guards
 if SETUP
     
@@ -98,7 +96,7 @@ f1 = [x(2); (-x(1) + x(3)); x(1) + (2*x(2) + 3*x(3))*(1+x(3)^2) + w];
     gfw = guard(1, vars, loc1, loc2, Xfw, R);
     gbk = guard(2, vars, loc2, loc1, Xbk, R);
     
-    Zeno_cap = 5;
+    Zeno_cap = Inf;
     gfw.zeno_cap = Zeno_cap;
     gbk.zeno_cap = Zeno_cap;
 end
@@ -123,7 +121,7 @@ if SOLVE
         order = orderlist(i);
         tic
        
-        [sol, PM] = PM.run(order, Tmax);
+        [PM, sol] = PM.run(order, Tmax);
         time_order(i) = toc;
     %     sol = PM.run(order) ;
             obj_rec = sol.obj_rec;
@@ -159,8 +157,8 @@ if SAMPLE
 %     Nsample = 1;
 % Nsample = 10;
 %     Nsample = 20;
-    % Nsample = 50;
-    Nsample = 1000;
+    Nsample = 50;
+    % Nsample = 1000;
 %     Nsample = 5;
 
 

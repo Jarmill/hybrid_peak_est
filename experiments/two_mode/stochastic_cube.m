@@ -151,36 +151,45 @@ if SAMPLE
     rng(25, 'twister')
 %     smp1 = struct('x', @() sphere_sample(1, 3)'*R0);
 % smp1 = struct('x', @() sphere_sample(1, 3)'*(1e-3+R0));
-    smp1 = struct('x', @() [0.5; 0.5; 0.5]);
 
-    smp2 = struct('x', []);
-    
-    
-    LS1 = sampler_sde_uncertain(loc1, smp1);
-    
-    LS2 = sampler_sde_uncertain(loc2, smp2);
-    
-    
-    LS1.mu = 0.01;
-    LS2.mu = 0.01;
+Nbatch = 5;
+Nsample = 5;
+    osm_list = 
 
-%     LS1.mu = 0.03;
-%     LS2.mu = 0.03;
+    for i = 1:Nbatch
+        smp1 = struct('x', @() [0.5; 0.5; 0.5]);
     
-    HS = sampler_hy({LS1, LS2}, {gfw, gbk});
+        smp2 = struct('x', []);
+        
+        
+        LS1 = sampler_sde_uncertain(loc1, smp1);
+        
+        LS2 = sampler_sde_uncertain(loc2, smp2);
+        
+        
+        LS1.mu = 0.01;
+        LS2.mu = 0.01;
     
-    %     osh = HS.sample_traj(0, [0;0;0.03], 1, 5);
-%     Nsample = ;
-%     Nsample = 20;
-    % Nsample = 50;
-    Nsample = 5000;
-%     Nsample = 5;
-
-
-    [osm, osd] = HS.sample_traj_multi(Nsample, 1);
+    %     LS1.mu = 0.03;
+    %     LS2.mu = 0.03;
+        
+        HS = sampler_hy({LS1, LS2}, {gfw, gbk});
+        
+        %     osh = HS.sample_traj(0, [0;0;0.03], 1, 5);
+    %     Nsample = ;
+    %     Nsample = 20;
+        
+        % Nsample = 5000;
+        % Nsample = 5;
     
-    t_end = cellfun(@(o) o.t_end, osm);
+        
     
+    
+        [osm, osd] = HS.sample_traj_multi(Nsample, 1);
+        
+        t_end = cellfun(@(o) o.t_end, osm);
+        
+    end
 %     osm = SMP.sample_traj_multi(Ntraj, lsupp.Tmax);
     save('traj/stoch_cube_traj_big.mat', 'osm', 'osd')
 else
