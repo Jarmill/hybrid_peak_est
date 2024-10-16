@@ -14,7 +14,7 @@
 SETUP = 1;
 SOLVE = 0;
 SAMPLE = 1;
-PLOT = 1;
+PLOT = 0;
 
 
 %% setup the locations and guards
@@ -148,16 +148,21 @@ end
 
 %% sample trajectories
 if SAMPLE
-    rng(25, 'twister')
+    rng(24, 'twister')
 %     smp1 = struct('x', @() sphere_sample(1, 3)'*R0);
 % smp1 = struct('x', @() sphere_sample(1, 3)'*(1e-3+R0));
 
-% Nbatch = 5;
-Nsample = 5;
-    % osm_list = 
+Nbatch = 1;
+Nsample = 1000;
+x0_list = zeros(3, Nbatch);
+    osm_list = cell(Nbatch, 1);
+    osd_list = cell(Nbatch, 1);
 
-    % for i = 1:Nbatch
-        smp1 = struct('x', @() [0.5; 0.5; 0.5]);
+    for i = 1:Nbatch
+        % x0 = sphere_sample(1, 3)'*R0;
+        x0 = [0.5; 0.5; 0.5];
+        x0_list(:, i) = x0;
+        smp1 = struct('x', @() x0);
     
         smp2 = struct('x', []);
         
@@ -185,13 +190,26 @@ Nsample = 5;
         
     
     
-        [osm, osd] = HS.sample_traj_multi(Nsample, 1);
+        [osm_list{i}, osd_list{i}] = HS.sample_traj_multi(Nsample, 1);
         
-        t_end = cellfun(@(o) o.t_end, osm);
         
+
+        % t_end = cellfun(@(o) o.t_end, osm);
+    end
+
+    % osd = struct('locations', cell(2, 1));
+    osd = struct;
+    osd.locations = cell(2, 1);    
+    osd.locations{1} = osd_list{1}.locations{1};
+    osd.locations{2} = osd_list{1}.locations{2};
+    for i = 2:Nbatch
+        osd.locations{1} = [osd.locations{1}; osd_list{i}.locations{1}];
+        osd.locations{2} = [osd.locations{2}; osd_list{i}.locations{2}];
+    end
     
 %     osm = SMP.sample_traj_multi(Ntraj, lsupp.Tmax);
-    save('traj/stoch_cube_traj_big.mat', 'osm', 'osd')
+    % save('traj/stoch_cube_traj_big.mat', 'osm', 'osd')
+    save('traj/stoch_cube_traj_big.mat', 'osm_list', 'osd_list')
 else
     load('traj/stoch_cube_traj_big.mat');
     Ntraj = length(osm);
